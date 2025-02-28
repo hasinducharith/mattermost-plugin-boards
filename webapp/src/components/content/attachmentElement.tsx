@@ -21,6 +21,7 @@ import {Permission} from '../../constants'
 import ArchivedFile from './archivedFile/archivedFile'
 
 import './attachmentElement.scss'
+import './itpDownloadProgressBar.scss'
 import CompassIcon from './../../widgets/icons/compassIcon'
 import MenuWrapper from './../../widgets/menuWrapper'
 import IconButton from './../../widgets/buttons/iconButton'
