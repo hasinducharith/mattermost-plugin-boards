@@ -1,0 +1,50 @@
+.message-div{
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    padding-block: 10px;;
+
+    span {
+        padding-inline: 30px;
+    }
+}
+
+.success-message-div{
+    background-color: #02b502;
+}
+
+.error-message-div{
+    background-color: #e30505;
+}
+
+.update-button{
+    background-color: #0058FC;
+    color: white;
+}
+
+.update-button:hover{
+    background-color: blue;
+    color: white;
+}
+
+.delete-button{
+    background-color: #ED1313;
+    color: white;
+}
+
+.delete-button:hover{
+    background-color: red;
+    color: white;
+}
+
+.action-btns-div{
+    display: flex;
+}
+
+.sized-box-20{
+    padding-inline: 20px;
+}
+
+.task-reminder-selector option {
+    background-color: rgb(var(--center-channel-bg-rgb));
+}
