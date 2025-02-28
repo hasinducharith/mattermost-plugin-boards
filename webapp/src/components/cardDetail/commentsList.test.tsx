@@ -20,6 +20,7 @@ import {FetchMock} from '../../test/fetchMock'
 import {mockMMStore} from '../../../tests/mock_window'
 
 import CommentsList from './commentsList'
+jest.mock('../../octoClient')
 
 global.fetch = FetchMock.fn
 jest.spyOn(Utils, 'displayDateTime').mockReturnValue('a long time ago')
@@ -89,6 +90,9 @@ describe('components/cardDetail/CommentsList', () => {
                         cardId={'card_id'}
                         boardId={'board_id'}
                         readonly={false}
+                        attachments={[]}
+                        onDelete={jest.fn()}
+                        addAttachment={jest.fn()}
                     />,
                 )}
             </ReduxProvider>)
@@ -148,6 +152,9 @@ describe('components/cardDetail/CommentsList', () => {
                         cardId={'card_id'}
                         boardId={'board_id'}
                         readonly={true}
+                        attachments={[]}
+                        onDelete={jest.fn()}
+                        addAttachment={jest.fn()}
                     />,
                 )}
             </ReduxProvider>)

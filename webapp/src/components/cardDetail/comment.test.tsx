@@ -19,6 +19,7 @@ import {mockMMStore} from '../../../tests/mock_window'
 
 import Comment from './comment'
 
+jest.mock('../../octoClient')
 jest.mock('../../mutator')
 const mockedMutator = mocked(mutator, true)
 
@@ -65,6 +66,7 @@ describe('components/cardDetail/comment', () => {
                     userId={comment.modifiedBy}
                     userImageUrl={userImageUrl}
                     readonly={false}
+                    onDelete={jest.fn()}
                 />
             </ReduxProvider>,
         ))
@@ -81,6 +83,7 @@ describe('components/cardDetail/comment', () => {
                     userId={comment.modifiedBy}
                     userImageUrl={userImageUrl}
                     readonly={true}
+                    onDelete={jest.fn()}
                 />
             </ReduxProvider>,
         ))
@@ -95,6 +98,7 @@ describe('components/cardDetail/comment', () => {
                     userId={comment.modifiedBy}
                     userImageUrl={userImageUrl}
                     readonly={false}
+                    onDelete={jest.fn()}
                 />
             </ReduxProvider>,
         ))
@@ -128,6 +132,7 @@ describe('components/cardDetail/comment', () => {
                     userId={comment.modifiedBy}
                     userImageUrl={userImageUrl}
                     readonly={false}
+                    onDelete={jest.fn()}
                 />
             </ReduxProvider>,
         ))
@@ -157,6 +162,7 @@ describe('components/cardDetail/comment', () => {
                     userId={comment.modifiedBy}
                     userImageUrl={userImageUrl}
                     readonly={true}
+                    onDelete={jest.fn()}
                 />
             </ReduxProvider>,
         ))
@@ -184,6 +190,7 @@ describe('components/cardDetail/comment', () => {
                     userId={comment.modifiedBy}
                     userImageUrl={userImageUrl}
                     readonly={false}
+                    onDelete={jest.fn()}
                 />
             </ReduxProvider>,
         ))

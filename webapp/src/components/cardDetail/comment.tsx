@@ -24,20 +24,23 @@ import GuestBadge from '../../widgets/guestBadge'
 import './comment.scss'
 import {formatText, messageHtmlToComponent} from '../../webapp_globals'
 import {getCurrentTeam} from '../../store/teams'
-
+import AttachmentElement from '../../components/content/attachmentElement'
+import {createAttachmentBlock} from '../../blocks/attachmentBlock'
 
 type Props = {
     comment: Block
     userId: string
     userImageUrl: string
     readonly: boolean
+    onDelete: (block: Block) => void
 }
 
 const Comment: FC<Props> = (props: Props) => {
-    const {comment, userId, userImageUrl} = props
+    const {comment, userId, userImageUrl, onDelete} = props
     const intl = useIntl()
     const user = useAppSelector(getUser(userId))
     const date = new Date(comment.createAt)
+    const attachmentBlock = createAttachmentBlock(props.comment)
 
     const selectedTeam = useAppSelector(getCurrentTeam)
     const channelNamesMap =  getChannelsNameMapInTeam((window as any).store.getState(), selectedTeam!.id)
@@ -55,40 +58,78 @@ const Comment: FC<Props> = (props: Props) => {
 
     return (
         <div
-            key={comment.id}
-            className='Comment comment'
+            className=''
         >
-            <div className='comment-header'>
-                <img
-                    className='comment-avatar'
-                    src={userImageUrl}
-                />
-                <div className='comment-username'>{user?.username}</div>
-                <GuestBadge show={user?.is_guest}/>
+            {props.comment.type == 'comment' ? (
+                <div
+                    key={comment.id}
+                    className='Comment comment'
+                >
+                    <div className='comment-header'>
+                        <img
+                            className='comment-avatar'
+                            src={userImageUrl}
+                        />
+                        <div className='comment-username'>{user?.username}</div>
+                        <GuestBadge show={user?.is_guest}/>
 
-                <Tooltip title={Utils.displayDateTime(date, intl)}>
-                    <div className='comment-date'>
-                        {Utils.relativeDisplayDateTime(date, intl)}
+                        <Tooltip title={Utils.displayDateTime(date, intl)}>
+                            <div className='comment-date'>
+                                {Utils.relativeDisplayDateTime(date, intl)}
+                            </div>
+                        </Tooltip>
+
+                        {!props.readonly && (
+                            <MenuWrapper>
+                                <IconButton icon={<OptionsIcon/>}/>
+                                <Menu position='left'>
+                                    <Menu.Text
+                                        icon={<DeleteIcon/>}
+                                        id='delete'
+                                        name={intl.formatMessage({id: 'Comment.delete', defaultMessage: 'Delete'})}
+                                        onClick={() => mutator.deleteBlock(comment)}
+                                    />
+                                </Menu>
+                            </MenuWrapper>
+                        )}
                     </div>
-                </Tooltip>
-
-                {!props.readonly && (
-                    <MenuWrapper>
-                        <IconButton icon={<OptionsIcon/>}/>
-                        <Menu position='left'>
-                            <Menu.Text
-                                icon={<DeleteIcon/>}
-                                id='delete'
-                                name={intl.formatMessage({id: 'Comment.delete', defaultMessage: 'Delete'})}
-                                onClick={() => mutator.deleteBlock(comment)}
+                    <div className='comment-markdown'>
+                        {formattedText}
+                    </div>
+                </div>
+            ) : (
+                <div className="attachemnt-section">
+                    <div
+                        key={comment.id}
+                        className='Comment comment'
+                    >
+                        <div className='comment-header'>
+                            <img
+                                className='comment-avatar'
+                                src={userImageUrl}
                             />
-                        </Menu>
-                    </MenuWrapper>
-                )}
-            </div>
-            <div className='comment-markdown'>
-                {formattedText}
-            </div>
+                            <div className='comment-username'>{user?.username}</div>
+                            <GuestBadge show={user?.is_guest}/>
+            
+                            <Tooltip title={Utils.displayDateTime(date, intl)}>
+                                <div className='comment-date'>
+                                    {Utils.relativeDisplayDateTime(date, intl)}
+                                </div>
+                            </Tooltip>
+                        </div>
+                    </div>
+                    <div className='Attachment'>
+                        <div className='attachment-content'>
+                            <div key={props.comment.id}>
+                                <AttachmentElement
+                                    block={attachmentBlock}
+                                    onDelete={onDelete}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

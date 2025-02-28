@@ -41,6 +41,7 @@ const AttachmentElement = (props: Props): JSX.Element|null => {
     const [showConfirmationDialogBox, setShowConfirmationDialogBox] = useState<boolean>(false)
     const uploadPercent = useAppSelector(getUploadPercent(block.id))
     const intl = useIntl()
+    const [downloadProgress, setDownloadProgress] = useState<boolean>(false)
 
     useEffect(() => {
         const loadFile = async () => {
@@ -114,6 +115,7 @@ const AttachmentElement = (props: Props): JSX.Element|null => {
     }
 
     const attachmentDownloadHandler = async () => {
+        setDownloadProgress(true)
         const attachment = await octoClient.getFileAsDataUrl(block.boardId, block.fields.fileId)
         const anchor = document.createElement('a')
         anchor.href = attachment.url || ''
@@ -121,6 +123,24 @@ const AttachmentElement = (props: Props): JSX.Element|null => {
         document.body.appendChild(anchor)
         anchor.click()
         document.body.removeChild(anchor)
+        setDownloadProgress(false)
+    }
+
+    const handleShowButtonClick = async() => {
+        const attachment = await octoClient.getFileAsDataUrl(block.boardId, block.fields.fileId)
+        const attachmentInfo = await octoClient.getFileInfo(block.boardId, block.fields.fileId)
+
+        if(attachmentInfo.extension == ".png" || attachmentInfo.extension == ".jpg" || attachmentInfo.extension == ".jpeg" || attachmentInfo.extension == ".gif"){
+            const newWindow = window.open('', '_blank')
+            newWindow?.document.write('<img src="' + attachment.url + '" alt="Image">')
+        }else{
+            const anchor = document.createElement('a')
+            anchor.href = attachment.url || ''
+            anchor.download = fileInfo.name || ''
+            document.body.appendChild(anchor)
+            anchor.click()
+            document.body.removeChild(anchor)
+        }
     }
 
     return (
@@ -162,6 +182,13 @@ const AttachmentElement = (props: Props): JSX.Element|null => {
                         {''}
                     </span>
                 </div>}
+            {/* download progress bar */}
+            {
+                downloadProgress && <div className='progress'>
+                    <progress className="pure-material-progress-linear" title='download in progess'/>
+                </div>
+
+            }
             {!block.isUploading &&
             <div className='fileElement-delete-download'>
                 <BoardPermissionGate permissions={[Permission.ManageBoardCards]}>
@@ -180,6 +207,15 @@ const AttachmentElement = (props: Props): JSX.Element|null => {
                                         />}
                                     name='Delete'
                                     onClick={handleDeleteButtonClick}
+                                />
+                                <Menu.Text
+                                    id='makeTemplate'
+                                    icon={
+                                        <CompassIcon
+                                            icon='eye-outline'
+                                        />}
+                                    name='Show'
+                                    onClick={handleShowButtonClick}
                                 />
                             </Menu>
                         </div>
