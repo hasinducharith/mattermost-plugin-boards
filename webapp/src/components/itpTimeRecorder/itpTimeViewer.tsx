@@ -17,7 +17,7 @@ interface Props {
     board: string
 }
 
-const ItpTimeViewer = ({ board }: Props)  => {
+const ItpTimeViewer = ({}: Props)  => {
 
     const dispatch = useAppDispatch()
 
@@ -47,7 +47,7 @@ const ItpTimeViewer = ({ board }: Props)  => {
 
     const me = useAppSelector<IUser|null>(getMe)
 
-    const [activeTime,setActiveTimer] = useState(0)
+    const [activeTime] = useState(0)
 
     const [timesheetIdloc,setTimeSheetlocId] = useState(0)
 
@@ -184,7 +184,7 @@ const ItpTimeViewer = ({ board }: Props)  => {
         sendFlashMessage({content: 'Time Recorded successfully' , severity: 'high'})
     }
 
-    interface response {
+    interface Response {
 
         status:boolean
     }
@@ -193,7 +193,7 @@ const ItpTimeViewer = ({ board }: Props)  => {
     const stopTimer = async () => {
 
         const userid = me?.id
-        const response = await api.get<response>(
+        const response = await api.get<Response>(
             '/timerecord?type=stopTask&km_time_sheet_id=' + timesheetIdloc + '&userId=' + userid + '&cardId=' + taskStop
         )
 
