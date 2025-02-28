@@ -21,6 +21,12 @@ interface Props {
     card: Card,
 }
 
+interface TaskObject{
+    board_id?: string;
+    card_id?: string;
+    user_id?: string;
+}
+
 //add points card property
 const pointsOptions = [
     {value : '', label:'No Estimate'},
@@ -217,9 +223,9 @@ const ItpCardProperty = ({ card }:Props) => {
                 
             </div>
             {showConfirmationDialog && 
-                        <ConfirmationDialogBox
-                            dialogBox={confirmationDialogBox}
-                        />
+                <ConfirmationDialogBox
+                    dialogBox={confirmationDialogBox}
+                />
             }
             
         </div>
