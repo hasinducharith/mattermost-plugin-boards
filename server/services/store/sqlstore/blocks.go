@@ -246,7 +246,10 @@ func (s *SQLStore) insertBlock(db sq.BaseRunner, block *model.Block, userID stri
 	}
 
 	block.UpdateAt = utils.GetMillis()
-	block.ModifiedBy = userID
+
+	if block.Type != model.TypeComment || existingBlock != nil {
+		block.ModifiedBy = userID
+	}
 
 	insertQuery := s.getQueryBuilder(db).Insert("").
 		Columns(
@@ -265,6 +268,9 @@ func (s *SQLStore) insertBlock(db sq.BaseRunner, block *model.Block, userID stri
 			"board_id",
 		)
 
+	if block.Type == model.TypeComment {
+		userID = block.CreatedBy
+	}
 	insertQueryValues := map[string]interface{}{
 		"channel_id":            "",
 		"id":                    block.ID,
