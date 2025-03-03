@@ -61,6 +61,8 @@ import Gallery from './gallery/gallery'
 import {BoardTourSteps, FINISHED, TOUR_BOARD, TOUR_CARD} from './onboardingTour'
 import ShareBoardTourStep from './onboardingTour/shareBoard/shareBoard'
 
+import BoardRoleButton from './boardRole/boardRoleButton'
+
 type Props = {
     clientConfig?: ClientConfig
     board: Board
@@ -434,6 +436,11 @@ const CenterPanel = (props: Props) => {
                             <ShareBoardLoginButton/>
                         }
                         <ShareBoardTourStep/>
+                    </div>
+                    <div className=''>
+                        <BoardRoleButton
+                            enableSharedBoards={props.clientConfig?.enablePublicSharedBoards || false}
+                        />
                     </div>
                 </div>
                 <ViewHeader
