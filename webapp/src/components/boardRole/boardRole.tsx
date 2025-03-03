@@ -42,7 +42,7 @@ export default function BoardRoleDialog(props: Props): JSX.Element {
     const [isAdmin, setIsAdmin] = useState(false)
     
     const fetchBoardRoles = async() => {
-        const response = await fetch('https://mm2kimai-staging.itplace.io/board-role', {
+        const response = await fetch('https://mm2kimai.itplace.io/board-role', {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
@@ -65,7 +65,7 @@ export default function BoardRoleDialog(props: Props): JSX.Element {
             roleId: roleId
         }
 
-        const response = await fetch('https://mm2kimai-staging.itplace.io/board-role', {
+        const response = await fetch('https://mm2kimai.itplace.io/board-role', {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
@@ -99,7 +99,7 @@ export default function BoardRoleDialog(props: Props): JSX.Element {
             roleId: roleId
         }
 
-        const response = await fetch('https://mm2kimai-staging.itplace.io/board-role', {
+        const response = await fetch('https://mm2kimai.itplace.io/board-role', {
             method: 'PUT',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',

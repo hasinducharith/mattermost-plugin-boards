@@ -45,7 +45,6 @@ class ApiClient {
 }
   
 // Export an instance of the API client with your base URL.
-// const api = new ApiClient('https://mm2kimai.itplace.io')
-const api = new ApiClient('http://mm2kimai-staging.itplace.io')
+const api = new ApiClient('https://mm2kimai.itplace.io')
   
 export default api
