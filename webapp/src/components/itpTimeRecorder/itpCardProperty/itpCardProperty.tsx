@@ -21,12 +21,6 @@ interface Props {
     card: Card,
 }
 
-interface TaskObject{
-    board_id?: string;
-    card_id?: string;
-    user_id?: string;
-}
-
 //add points card property
 const pointsOptions = [
     {value : '', label:'No Estimate'},
@@ -154,46 +148,6 @@ const ItpCardProperty = ({ card }:Props) => {
         // open confirmation dialog property delete
         setShowConfirmationDialog(true)
     }
-
-    // var handleTaskComplete = async() => {
-    //     var cardDetail = await octoClient.getBlocksWithBlockID(card.id,card.boardId)
-    //     var boardDetail = await octoClient.getBoard(card.boardId)
-    //     var taskCompletePropertyId = '';
-    //     // get task completed property id 
-    //     if(boardDetail && boardDetail.cardProperties.length > 0) {
-    //         for(var i=0; i < boardDetail.cardProperties.length; i++){
-    //             var property = boardDetail.cardProperties[i];
-    //             if(property.name == "Task Completed"){  
-    //                 taskCompletePropertyId = property.id
-    //                 // console.log('working property');
-    //             }
-    //         }
-    //     }
-    //     // update task options 
-
-    //     // console.log(cardDetail);
-    //     if(cardDetail && cardDetail.length > 0){
-    //         var cardProperty = cardDetail[0].fields.properties
-
-    //         console.log(cardProperty = cardDetail[0].fields);
-
-    //         if(cardProperty[taskCompletePropertyId]){
-    //             delete cardProperty[taskCompletePropertyId]
-    //         }else{
-    //             cardProperty[taskCompletePropertyId] = 'yes';
-    //         }
-    //     } 
-        
-    //     if(cardProperty){
-    //         var finalArray = {
-    //             updatedFields: {
-    //                 properties: cardProperty
-    //             },
-    //             deletedFields: [],
-    //         }
-    //         await octoClient.patchBlock(card.boardId,card.id,finalArray)
-    //     }
-    // }
 
     return (
         <div>

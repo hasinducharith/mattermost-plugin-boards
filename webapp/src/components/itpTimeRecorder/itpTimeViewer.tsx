@@ -47,7 +47,7 @@ const ItpTimeViewer = ({}: Props)  => {
 
     const me = useAppSelector<IUser|null>(getMe)
 
-    const [activeTime] = useState(0)
+    const activeTime = 0
 
     const [timesheetIdloc,setTimeSheetlocId] = useState(0)
 
@@ -57,11 +57,9 @@ const ItpTimeViewer = ({}: Props)  => {
 
     const runTimer = (totalSecond:number) => {
 
-
         if(intervalId){
-      
+
             clearInterval(intervalId)
-      
         }
         
         const interval = setInterval(() => {
@@ -69,9 +67,6 @@ const ItpTimeViewer = ({}: Props)  => {
             totalSecond++
             const newTime = timeFormatSeconds(totalSecond)
             setCounter(newTime)
-
-        
-
         }, 1000)
         console.log(interval)
 
@@ -94,7 +89,6 @@ const ItpTimeViewer = ({}: Props)  => {
     useEffect(() => {
         console.log('this is it now')
 
-        // console.log(intervalId);
         if(intervalId){
             clearInterval(intervalId)
         }
@@ -104,23 +98,18 @@ const ItpTimeViewer = ({}: Props)  => {
             console.log('this is it')
         }
 
-
         console.log(isTriggered)
-     
-
     }, [isTriggered,isTabActive,ongoingTaskId])
 
     useEffect(()=>{
 
         console.log('retrievedValue -- '+storedValue)
-
         if(!retrievedValue){
             setIsShown(false)
             if(intervalId){
                 clearInterval(intervalId)
             }
         }
-
     },[storedValue])
 
 
@@ -136,7 +125,6 @@ const ItpTimeViewer = ({}: Props)  => {
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange)
         }
-
     }, [])
 
     useEffect(()=>{
@@ -144,7 +132,6 @@ const ItpTimeViewer = ({}: Props)  => {
         if(taskId != ''){
 
             setTaskId(taskId)
-
         }else{
 
             setTaskId(ongoingTaskIdres)
@@ -153,12 +140,10 @@ const ItpTimeViewer = ({}: Props)  => {
         if(taskURL != ''){
 
             setCardURL(taskURL)
-
         }else{
 
             setCardURL(ongoingTaskURL)
         }
-      
     },[taskId,totalSecond,activeTime,taskURL])
 
 
@@ -174,13 +159,14 @@ const ItpTimeViewer = ({}: Props)  => {
         }
 
         dispatch(setTrigger(
-            {isTriggered: false,
+            {
+                isTriggered: false,
                 taskId:'',
                 totalSecond:0,
                 taskURL:''
             }
         ))
-        // alert('Time Recorded successfully');
+
         sendFlashMessage({content: 'Time Recorded successfully' , severity: 'high'})
     }
 
@@ -227,8 +213,6 @@ const ItpTimeViewer = ({}: Props)  => {
             console.log(response)
             if(response.timesheet_id != 0 && response.status != 'stop'){
 
-            
-
                 setIsShown(true)
                 setCounter('Loading...')
 
@@ -244,7 +228,6 @@ const ItpTimeViewer = ({}: Props)  => {
             }else{
 
                 setIsShown(false)
-           
 
                 dispatch(setTrigger(
                     {isTriggered: false,
