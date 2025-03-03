@@ -1391,7 +1391,7 @@ class Mutator {
 
     async updateHubSpotTicketStatus(changedStatus: ChangeStatusProp) {
         // write api request to update Hubspot Ticket status
-        const response = await fetch('https://mm2kimai.itplace.io/mm-to-hs', {
+        const response = await fetch('https://mm2kimai-staging.itplace.io/mm-to-hs', {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',

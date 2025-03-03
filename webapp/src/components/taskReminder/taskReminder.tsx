@@ -41,7 +41,7 @@ const TaskReminder = ({ board, card }: Props) => {
     const [isUpdateReminder, setIsUpdateReminder] = useState(false)
 
     const fetchTaskReminder = async() => {
-        const response = await fetch('https://mm2kimai.itplace.io/task-reminder?board_id='+card.boardId+'&card_id='+card.id+'&user_id='+me?.id+'&action=getTaskReminder', {
+        const response = await fetch('https://mm2kimai-staging.itplace.io/task-reminder?board_id='+card.boardId+'&card_id='+card.id+'&user_id='+me?.id+'&action=getTaskReminder', {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
@@ -119,7 +119,7 @@ const TaskReminder = ({ board, card }: Props) => {
             user_id: me?.id,
         }
 
-        const response = await fetch('https://mm2kimai.itplace.io/task-reminder', {
+        const response = await fetch('https://mm2kimai-staging.itplace.io/task-reminder', {
             method: 'PUT',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
@@ -146,7 +146,7 @@ const TaskReminder = ({ board, card }: Props) => {
 
     const handleDeleteFunction = async() => {
 
-        const response = await fetch('https://mm2kimai.itplace.io/task-reminder?board_id='+card.boardId+'&card_id='+card.id+'&user_id='+me?.id, {
+        const response = await fetch('https://mm2kimai-staging.itplace.io/task-reminder?board_id='+card.boardId+'&card_id='+card.id+'&user_id='+me?.id, {
             method: 'DELETE',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
@@ -199,7 +199,7 @@ const TaskReminder = ({ board, card }: Props) => {
             action: 'create',
         }
 
-        const response = await fetch('https://mm2kimai.itplace.io/task-reminder', {
+        const response = await fetch('https://mm2kimai-staging.itplace.io/task-reminder', {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',

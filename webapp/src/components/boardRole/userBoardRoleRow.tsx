@@ -38,7 +38,7 @@ const UserBoardRoleRow = (props: Props): JSX.Element => {
     const [displayRole, setDisplayRole] = useState("None")
 
     const getUserBoardRole = async(userId: string, boardId: string) => {
-        const response = await fetch('https://mm2kimai.itplace.io/board-role?boardId='+boardId+'&userId='+userId, {
+        const response = await fetch('https://mm2kimai-staging.itplace.io/board-role?boardId='+boardId+'&userId='+userId, {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',

@@ -102,7 +102,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
         }
         
         try {
-            const response = await fetch('http://mm2kimai.itplace.io/timerecord', {
+            const response = await fetch('http://mm2kimai-staging.itplace.io/timerecord', {
                 method: 'POST',
                 body: JSON.stringify(obj),
                 headers: {
@@ -258,7 +258,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
 
     const handleStartOrRestart = async (obj: TaskObject): Promise<boolean> => {
         try {
-            const response = await fetch('http://mm2kimai.itplace.io/timerecord', {
+            const response = await fetch('http://mm2kimai-staging.itplace.io/timerecord', {
                 method: 'POST',
                 body: JSON.stringify(obj),
                 headers: {
@@ -356,7 +356,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
             task_url:''
         }
 
-        await fetch('http://mm2kimai.itplace.io/timerecord',{
+        await fetch('http://mm2kimai-staging.itplace.io/timerecord',{
             method: 'POST',
             body: JSON.stringify(obj),
             headers: {
@@ -454,7 +454,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
         }
 
         try {
-            const response = await fetch('http://mm2kimai.itplace.io/timerecord', {
+            const response = await fetch('http://mm2kimai-staging.itplace.io/timerecord', {
                 method: 'POST',
                 body: JSON.stringify(obj),
                 headers: {
@@ -515,7 +515,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
         const userid = me?.id
 
         try {
-            const response = await fetch('http://mm2kimai.itplace.io/timerecord?type=getdata&cardId=' + cardId +'&userid=' + userid ,{
+            const response = await fetch('http://mm2kimai-staging.itplace.io/timerecord?type=getdata&cardId=' + cardId +'&userid=' + userid ,{
                 method: 'GET',
                 headers: {
                     'Content-type': 'application/json; charset=UTF-8',
@@ -560,7 +560,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
     const removeSlot = async(timesheetId:number) => { 
 
         try {
-            const response = await fetch('http://mm2kimai.itplace.io/timerecord?type=delete&timesheet_id=' + timesheetId, {
+            const response = await fetch('http://mm2kimai-staging.itplace.io/timerecord?type=delete&timesheet_id=' + timesheetId, {
                 method: 'GET',
                 headers: {
                     'Content-type': 'application/json; charset=UTF-8',
