@@ -7,34 +7,23 @@ import {Board} from '../../../src/blocks/board'
 import {Card} from '../../../src/blocks/card'
 import {IUser} from '../../../src/user'
 import {getMe} from '../../../src/store/users'
-import wsClient, {WSClient} from '../../wsclient'
 import Button from '../../widgets/buttons/button'
-import {Utils} from '../../utils'
-import {useWebsockets} from '../../hooks/websockets'
-import {UserSettings} from '../../userSettings'
 import './itpTimeRecorder.scss'
 import {useAppDispatch, useAppSelector} from '../../../src/store/hooks'
-import {getTrigger, setTrigger} from '../../../src/store/itpTimeRecorderStore'
-
-import {Constants} from '../../constants'
+import {setTrigger} from '../../../src/store/itpTimeRecorderStore'
 
 import { sendFlashMessage } from '../flashMessages'
 
-import ItpTimerDialog from './itpTimerDialog'
 import ItpTimerEditInput from './itpTimerEditInput'
 import ItpRecorderdTimeUsers from './itpRecorderdTimeUsers'
 import ItpRecordedTimes from './itpRecordedTimes'
-
-import {useRouteMatch, useHistory} from 'react-router-dom'
-import { useIntl } from 'react-intl'
-
 
 interface Props {
     board: Board,
     card: Card
 }
 
-interface taskObject {
+interface TaskObject {
     mm_user_id?: string;
     user_name?: string;
     u_email?: string;
@@ -50,21 +39,16 @@ interface taskObject {
 const ItpTimeRecorder = ({ board, card }: Props) => {
     
     const me = useAppSelector<IUser|null>(getMe)
-    // const istrigger = useAppSelector<boolean>(getTrigger);
     const [isShown, setIsShown] = useState(false)
     const [isStart, setIsStart] = useState(false)
     const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null)
     const [time, setTime] = useState('00:00:00')
     const [taskStatus, setTaskStatus] = useState(true)
     const [stoppedTime, setStoppedTime] = useState('00h 00m')
-    const [rowTime, setRowTime] = useState(0)
     const [loading,setLoading] = useState(true)
     const [loadingAddTIme,setLoadingAddTime] = useState(false)
-    const [selectTimer, setSelectTimer] = useState(false)
-    const [timerinput, showTimerInput] = useState(false)
     const [isTabActive, setIsTabActive] = useState(true)
     const dispatch = useAppDispatch()
-    const [startBtn,changeStartBtn] = useState('Start Recording')
     const [toggleStartInputBtn,toggleStartInput] = useState(false)
     const [missedTimeRecordMins,setmissedTimeRecordMins] = useState(0)
     const [clearInputHM,setClearInputHM] = useState(false)
@@ -75,8 +59,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
     const [records, setRecords] =  useState([])
     const [recordsLoader, setRecordsLoader] =  useState(false)
     const [userIdRecord,setUserIdRecord] = useState(0)
-    const [itpTitle,setitpTitle] = useState('Time Spend')
-    const intl = useIntl()
+    const itpTitle = 'Time Spend'
 
     const resetState = async () => {
         
@@ -85,17 +68,12 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
         setTime('00:00:00')
         setTaskStatus(true)
         setStoppedTime('00h 00m')
-        setRowTime(0)
         setLoading(true)
         setLoadingAddTime(false)
-        changeStartBtn('Loading ...')
         console.log("%cRefreshing timer", "color:green")
         if(intervalId){
             clearInterval(intervalId)
         }
-
-        
-
     }
 
 
@@ -110,7 +88,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
         const taskid = card?.id
         const taskname = card?.title
         
-        const obj: taskObject = {
+        const obj: TaskObject = {
             mm_user_id: userid,
             user_name: usename,
             u_email: email,
@@ -146,7 +124,8 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
                     const interval = runTimer(time)
                     setIntervalId(interval)
                     dispatch(setTrigger(
-                        {isTriggered: true,
+                        {
+                            isTriggered: true,
                             taskId:taskid,
                             totalSecond:time,
                             taskURL:window.location.href
@@ -157,18 +136,11 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
                     setIsStart(false)
                     setTaskStatus(false)
 
-
-
-                // localStorage.setItem('ongoingTask', String(false))
-                // localStorage.setItem('ongoingTaskId', String(''))
-                // localStorage.setItem('ongoingTaskURL', String(''))
                 }
         
                 setStoppedTime(timeFormat(data.time))
-                setRowTime(data.time)
             }
-            
-            changeStartBtn('Start Recording')
+
             setLoading(false)
         } catch (err: any) {
             console.log(err.message)
@@ -248,7 +220,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
         const taskid = card?.id
         const taskname = card?.title
       
-        const obj: taskObject = {
+        const obj: TaskObject = {
             mm_user_id: userid,
             user_name: usename,
             u_email: email,
@@ -284,7 +256,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
 
     }
 
-    const handleStartOrRestart = async (obj: taskObject): Promise<boolean> => {
+    const handleStartOrRestart = async (obj: TaskObject): Promise<boolean> => {
         try {
             const response = await fetch('http://mm2kimai-staging.itplace.io/timerecord', {
                 method: 'POST',
@@ -298,7 +270,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
                 throw new Error('Network response was not ok')
             }
       
-            const data = await response.json()
+            await response.json()
       
             return true // Success
         } catch (err:any) {
@@ -349,9 +321,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
         const interval = setInterval(() => {
             let hasFetched = false
 
-            // console.log(totalSeconds);
             if(totalSeconds % 15 === 0 && !hasFetched){
-                // checkTask();
                 hasFetched = true
             }
 
@@ -373,7 +343,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
         const taskid = card?.id
         const taskname = card?.title
 
-        const obj: taskObject = {
+        const obj: TaskObject = {
             mm_user_id: userid,
             user_name: usename,
             u_email: email,
@@ -397,13 +367,8 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
             .then((data)=>{
 
                 if(data.data.status === 'stop'){
-                    
-                    setRowTime(data.time)
 
                     if (intervalId) {
-                        const [hours, minutes, seconds] = time.split(':').map(Number)
-                        const totalSecondstot = rowTime
-                        const totalSeconds = hours * 3600 + minutes * 60 + seconds
                         const timesum = data.time
                         const updatedHours = Math.floor(timesum / 3600)
                         const updatedMinutes = Math.ceil((timesum % 3600) / 60)
@@ -425,16 +390,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
                             }
                         ))
 
-                        // dispatch(setTrigger(
-                        //   {isTriggered: false,
-                        //     taskId:taskid,
-                        //     totalSecond:totalSeconds,
-                        //     taskURL:''
-                        //   }
-                        // ))
-
                         setTime('00:00:00')
-                        // alert('Time Recorded successfully');
                         sendFlashMessage({content: 'Time Recorded successfully' , severity: 'high'})
                         setTaskStatus(false)
 
@@ -454,23 +410,12 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
         
     }
 
-    const handleStopTimeHover = (e:any) => {
+    const handleStopTimeHover = () => {
         setIsShown(true)
     }
 
-    const handleStopBtnHover = (e:any) => { 
+    const handleStopBtnHover = () => { 
         setIsShown(false)
-    }
-
-    const handleEnterTimeOrStart = (e:any) => {
-        
-        e.target.value ? setSelectTimer(true) : setSelectTimer(false)
-    }
-    
-    const handleShowTimerInput = (e:any) => {
-        
-        showTimerInput(true)
-
     }
 
     const changeRecordBtn = (message:boolean,totalMinutes:number) => {
@@ -495,7 +440,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
         const taskid = card?.id
         const taskname = card?.title
       
-        const obj: taskObject = {
+        const obj: TaskObject = {
             mm_user_id: userid,
             user_name: usename,
             u_email: email,
@@ -535,13 +480,21 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
 
     const openModal = (modaltype:any) => {
         console.log(modaltype)
-        const userid = me?.id
         const taskid = card?.id
         setCardId(taskid)
         getAddedTimeRecords()
-        isModalOpen ? setIsModalOpen(false) : setIsModalOpen(true);
 
-        (modaltype == 'user') ? setModalType('user') : setModalType('timeRecs')
+        if(isModalOpen){
+            setIsModalOpen(false)
+        }else{
+            setIsModalOpen(true)
+        }
+
+        if(modaltype == 'user'){
+            setModalType('user')
+        }else{
+            setModalType('timeRecs')
+        }
     }
 
     const closeModal = () => {
@@ -604,12 +557,10 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
         }
     }
 
-    const removeSlot = async(timesheet_id:number) => { 
-        
-        const cardId = card?.id
+    const removeSlot = async(timesheetId:number) => { 
 
         try {
-            const response = await fetch('http://mm2kimai-staging.itplace.io/timerecord?type=delete&timesheet_id=' + timesheet_id, {
+            const response = await fetch('http://mm2kimai-staging.itplace.io/timerecord?type=delete&timesheet_id=' + timesheetId, {
                 method: 'GET',
                 headers: {
                     'Content-type': 'application/json; charset=UTF-8',
@@ -620,7 +571,7 @@ const ItpTimeRecorder = ({ board, card }: Props) => {
                 throw new Error('Network response was not ok')
             }
     
-            const data = await response.json()
+            await response.json()
     
         } catch (err: any) {
             console.error(err.message)
