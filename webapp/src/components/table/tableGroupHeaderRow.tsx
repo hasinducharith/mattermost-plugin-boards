@@ -21,6 +21,8 @@ import MenuWrapper from '../../widgets/menuWrapper'
 import Editable from '../../widgets/editable'
 import Label from '../../widgets/label'
 
+import ShowIcon from '../../widgets/icons/show'
+
 import {useColumnResize} from './tableColumnResizeContext'
 
 type Props = {
@@ -30,9 +32,11 @@ type Props = {
     groupByProperty?: IPropertyTemplate
     readonly: boolean
     hideGroup: (groupByOptionId: string) => void
+    hideCompletedTask: (isCompleted: boolean) => void
     addCard: (groupByOptionId?: string) => Promise<void>
     propertyNameChanged: (option: IPropertyOption, text: string) => Promise<void>
     onDrop: (srcOption: IPropertyOption, dstOption?: IPropertyOption) => void
+    completedTasksCount:number
 }
 
 const TableGroupHeaderRow = (props: Props): JSX.Element => {
@@ -42,6 +46,9 @@ const TableGroupHeaderRow = (props: Props): JSX.Element => {
     const [isDragging, isOver, groupHeaderRef] = useSortable('groupHeader', group.option, !props.readonly, props.onDrop)
     const intl = useIntl()
     const columnResize = useColumnResize()
+
+    const [isCompleted, setCompleted] = useState(false)
+    const [HideShowString, setHideShowString] = useState('Show Completed Tasks')
 
     useEffect(() => {
         setGroupTitle(group.option.value)
@@ -55,6 +62,17 @@ const TableGroupHeaderRow = (props: Props): JSX.Element => {
     }
 
     const canEditOption = groupByProperty?.type !== 'person' && group.option.id
+
+    const handleClick2 = () => {
+        if(isCompleted) {
+            setCompleted(false)
+            setHideShowString("Show Completed Tasks")
+        }else{
+            setCompleted(true)
+            setHideShowString("Hide Completed Tasks")
+        }
+        props.hideCompletedTask(false)
+    }
 
     return (
         <div
@@ -127,6 +145,14 @@ const TableGroupHeaderRow = (props: Props): JSX.Element => {
                                 icon={<HideIcon/>}
                                 name={intl.formatMessage({id: 'BoardComponent.hide', defaultMessage: 'Hide'})}
                                 onClick={() => mutator.hideViewColumn(board.id, activeView, group.option.id || '')}
+                            />
+                            <Menu.Text 
+                                id='hide'
+                                icon={
+                                    isCompleted ? <HideIcon/> : <ShowIcon/>
+                                }
+                                name={HideShowString + ' (' + props.completedTasksCount + ')'}
+                                onClick={handleClick2}
                             />
                             {canEditOption &&
                                 <>

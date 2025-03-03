@@ -1,7 +1,7 @@
 // Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import React from 'react'
+import React, {useState} from 'react'
 
 import {useDrop} from 'react-dnd'
 
@@ -33,6 +33,9 @@ type Props = {
 const TableGroup = (props: Props): JSX.Element => {
     const {board, activeView, group, onDropToGroup, groupByProperty} = props
     const groupId = group.option.id
+    const [isCompleted, setCompleted] = useState(false)
+    let taskCompletePropertyId = ''
+    let count = 0
 
     const [{isOver}, drop] = useDrop(() => ({
         accept: 'card',
@@ -51,22 +54,51 @@ const TableGroup = (props: Props): JSX.Element => {
         className += ' dragover'
     }
 
+    const hideCompletedTask = (isCompleted : boolean) => {
+        if(isCompleted == false){
+            setCompleted(true)
+        }else{
+            setCompleted(false)
+        }        
+    }
+
+    // get task complete property id 
+    for(let i=0; i < props.board.cardProperties.length; i++){
+        const row = props.board.cardProperties[i]
+        if(row.name == "Task Completed" || row.name == " Task Completed"){
+            taskCompletePropertyId = row.id
+        }
+    }
+
     return (
         <div
             ref={drop}
             className={className}
             key={group.option.id}
         >
+
+            {
+                group.cards.map((card) => {
+                    if(card.fields.properties){
+                        if(card.fields.properties[taskCompletePropertyId]){
+                            count++
+                        }
+                    }
+                })
+            }
+
             <TableGroupHeaderRow
                 group={group}
                 board={board}
                 activeView={activeView}
                 groupByProperty={groupByProperty}
                 hideGroup={props.hideGroup}
+                hideCompletedTask={hideCompletedTask}
                 addCard={props.addCard}
                 readonly={props.readonly}
                 propertyNameChanged={props.propertyNameChanged}
                 onDrop={props.onDropToGroupHeader}
+                completedTasksCount={count}
             />
 
             {(group.cards.length > 0) &&
@@ -81,6 +113,7 @@ const TableGroup = (props: Props): JSX.Element => {
                 addCard={props.addCard}
                 onCardClicked={props.onCardClicked}
                 onDrop={props.onDropToCard}
+                isCompleted={isCompleted}
             />}
         </div>
     )

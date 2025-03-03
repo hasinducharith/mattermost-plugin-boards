@@ -66,12 +66,14 @@ test('should match snapshot, no groups', async () => {
                 addCard={jest.fn()}
                 propertyNameChanged={jest.fn()}
                 onDrop={jest.fn()}
+                hideCompletedTask={jest.fn()}
                 groupByProperty={{
                     id: '',
                     name: 'Property 1',
                     type: 'text',
                     options: [{id: 'property1', value: 'Property 1', color: ''}],
                 }}
+                completedTasksCount={0}
             />
         </Wrapper>,
     )
@@ -89,7 +91,9 @@ test('should match snapshot with Group', async () => {
                 hideGroup={jest.fn()}
                 addCard={jest.fn()}
                 propertyNameChanged={jest.fn()}
+                hideCompletedTask={jest.fn()}
                 onDrop={jest.fn()}
+                completedTasksCount={0}
             />
         </Wrapper>,
     )
@@ -107,7 +111,9 @@ test('should match snapshot on read only', async () => {
                 hideGroup={jest.fn()}
                 addCard={jest.fn()}
                 propertyNameChanged={jest.fn()}
+                hideCompletedTask={jest.fn()}
                 onDrop={jest.fn()}
+                completedTasksCount={0}
             />
         </Wrapper>,
     )
@@ -130,7 +136,9 @@ test('should match snapshot, hide group', async () => {
                 hideGroup={hideGroup}
                 addCard={jest.fn()}
                 propertyNameChanged={jest.fn()}
+                hideCompletedTask={jest.fn()}
                 onDrop={jest.fn()}
+                completedTasksCount={0}
             />
         </Wrapper>,
     )
@@ -158,7 +166,9 @@ test('should match snapshot, add new', async () => {
                 hideGroup={jest.fn()}
                 addCard={addNew}
                 propertyNameChanged={jest.fn()}
+                hideCompletedTask={jest.fn()}
                 onDrop={jest.fn()}
+                completedTasksCount={0}
             />
         </Wrapper>,
     )
@@ -184,7 +194,9 @@ test('should match snapshot, edit title', async () => {
                 hideGroup={jest.fn()}
                 addCard={jest.fn()}
                 propertyNameChanged={jest.fn()}
+                hideCompletedTask={jest.fn()}
                 onDrop={jest.fn()}
+                completedTasksCount={0}
             />
         </Wrapper>,
     )
