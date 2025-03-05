@@ -24,6 +24,9 @@ import {Permission} from '../../constants'
 import {useHasCurrentBoardPermissions} from '../../hooks/permissions'
 import propRegistry from '../../properties'
 import {PropertyType} from '../../properties/types'
+import ItpTimeRecorder from '../itpTimeRecorder/itpTimeRecorder'
+import TaskReminder from '../taskReminder/taskReminder'
+import ItpCardProperty from '../itpTimeRecorder/itpCardProperty/itpCardProperty'
 
 type Props = {
     board: Board
@@ -160,6 +163,15 @@ const CardDetailProperties = (props: Props) => {
                     </div>
                 )
             })}
+
+            {/*point property component */}
+            <ItpCardProperty  board={board} card={card}/>
+
+            {/* task reminder component  */}
+            <TaskReminder board={board} card={card}/>
+
+            {/* task time tracker  */}
+            <ItpTimeRecorder board={board} card={card}/>
 
             {showConfirmationDialog && (
                 <ConfirmationDialogBox

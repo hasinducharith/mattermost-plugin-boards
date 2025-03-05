@@ -48,6 +48,8 @@ import mutator from '../../mutator'
 
 import {Board} from '../../blocks/board'
 
+import ItpTimeViewer from '../itpTimeRecorder/itpTimeViewer'
+
 import SidebarCategory from './sidebarCategory'
 import SidebarSettingsMenu from './sidebarSettingsMenu'
 import SidebarUserMenu from './sidebarUserMenu'
@@ -383,6 +385,8 @@ const Sidebar = (props: Props) => {
                     }
                 </div>
             }
+
+            <div> <ItpTimeViewer board={''}/></div>
 
             <BoardsSwitcher
                 onBoardTemplateSelectorOpen={props.onBoardTemplateSelectorOpen}

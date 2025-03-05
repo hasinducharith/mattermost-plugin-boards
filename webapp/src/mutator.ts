@@ -33,6 +33,9 @@ import {updateComments} from './store/comments'
 import {updateContents} from './store/contents'
 import {addBoardUsers, removeBoardUsersById} from './store/users'
 
+import {StatusProp} from './blocks/statusProp'
+import {ChangeStatusProp} from './blocks/changeStatusProp'
+
 function updateAllBoardsAndBlocks(boards: Board[], blocks: Block[]) {
     return batch(() => {
         store.dispatch(updateBoards(boards.filter((b: Board) => b.deleteAt !== 0) as Board[]))
@@ -86,9 +89,11 @@ class Mutator {
         await undoManager.perform(
             async () => {
                 await octoClient.patchBlock(boardId, newBlock.id, updatePatch)
+                await this.onUpdatedSubscribeUsersToTask(boardId, newBlock, oldBlock)
             },
             async () => {
                 await octoClient.patchBlock(boardId, oldBlock.id, undoPatch)
+                await this.onUpdatedSubscribeUsersToTask(boardId, newBlock, oldBlock)
             },
             description,
             this.undoGroupId,
@@ -1216,6 +1221,185 @@ class Mutator {
 
     async redo() {
         await undoManager.redo()
+    }
+
+    // customize functions
+    async onUpdatedSubscribeUsersToTask(boardId: string, newCard: Block, oldCard: Block) {
+        const propertyIds = await this.getMultiPersonAndPersonPropertyIds(boardId)
+        const statusProperty = await this.getStatusProperty(boardId)
+        if (propertyIds.length > 0) {
+            const usersList = this.getAllUsersListInTaskByTaskPropertyIds(newCard, oldCard, propertyIds)
+
+            if (usersList) {
+                const subscribeAndUnsubsribeUsersList = this.subscribeAndUnsubsribeUsers(usersList)
+
+                if (subscribeAndUnsubsribeUsersList.subscribeUsers.length > 0) {
+                    await this.subscribeUsers(newCard, subscribeAndUnsubsribeUsersList.subscribeUsers)
+                }
+
+                if (subscribeAndUnsubsribeUsersList.unsubscribeUsers.length > 0) {
+                    await this.unsubscribeUsers(newCard, subscribeAndUnsubsribeUsersList.unsubscribeUsers)
+                }
+            }
+        }
+
+        if (statusProperty !== undefined) {
+            const changedStatus: ChangeStatusProp = this.checkStatusChange(statusProperty, newCard, oldCard)
+
+            if (changedStatus.isChanged == true) {
+                this.updateHubSpotTicketStatus(changedStatus)
+            }
+        }
+    }
+
+    async getMultiPersonAndPersonPropertyIds(boardId: string) {
+        const properties: string[] = []
+        const boardDetails: Board | undefined = await octoClient.getBoard(boardId)
+
+        if (boardDetails) {
+            for (let i = 0; i < boardDetails?.cardProperties.length; i++) {
+                const property = boardDetails?.cardProperties[i]
+
+                switch (property.type) {
+                case 'multiPerson':
+                    properties.push(property.id)
+                    break
+
+                case 'person':
+                    properties.push(property.id)
+                    break
+
+                default:
+                    break
+                }
+            }
+        }
+
+        return properties
+    }
+
+    getAllUsersListInTaskByTaskPropertyIds(newCard: Block, oldCard: Block, properties: string[]) {
+        const newUsers: string[] = []
+        const oldUsers: string[] = []
+        const userList: any = []
+
+        for (let i = 0; i < properties.length; i++) {
+            const propertyId = properties[i]
+
+            if (newCard.fields.properties) {
+                if (newCard.fields.properties[propertyId] && newCard.fields.properties[propertyId].length > 0) {
+                    for (let j = 0; j < newCard.fields.properties[propertyId].length; j++) {
+                        const newUserId = newCard.fields.properties[propertyId][j]
+                        newUsers.push(newUserId)
+                    }
+                }
+            }
+
+            if (oldCard.fields.properties) {
+                if (oldCard.fields.properties[propertyId] && oldCard.fields.properties[propertyId].length > 0) {
+                    for (let j = 0; j < oldCard.fields.properties[propertyId].length; j++) {
+                        const oldUserId = oldCard.fields.properties[propertyId][j]
+                        oldUsers.push(oldUserId)
+                    }
+                }
+            }
+        }
+
+        userList.newUsers = newUsers
+        userList.oldUsers = oldUsers
+
+        return userList
+    }
+
+    subscribeAndUnsubsribeUsers(usersList: any) {
+        const subscribeAndUnsubsribeUsersList: any = []
+        const newUsers: string[] = usersList.newUsers
+        const oldUsers: string[] = usersList.oldUsers
+
+        // Use filter to find new users (not present in oldUsers)
+        const haveToSubscribeUsers: string[] = newUsers.filter(
+            (newUser) => !oldUsers.includes(newUser),
+        )
+
+        // Use filter again to find users in old list but not in newUsers
+        const haveToUnsubscribeUsers: string[] = oldUsers.filter(
+            (oldUser) => !newUsers.includes(oldUser),
+        )
+
+        subscribeAndUnsubsribeUsersList.subscribeUsers = haveToSubscribeUsers
+        subscribeAndUnsubsribeUsersList.unsubscribeUsers = haveToUnsubscribeUsers
+
+        return subscribeAndUnsubsribeUsersList
+    }
+
+    async subscribeUsers(card: Block, users: string[]) {
+        for (let i = 0; i < users.length; i++) {
+            const user: string = users[i]
+            await octoClient.followBlock(card.id, 'card', user)
+        }
+    }
+
+    async unsubscribeUsers(card: Block, users: string[]) {
+        for (let i = 0; i < users.length; i++) {
+            const user: string = users[i]
+            await octoClient.unfollowBlock(card.id, 'card', user)
+        }
+    }
+
+    async getStatusProperty(boardId: string) {
+        let statusProperty: StatusProp | undefined
+        const boardDetails: Board | undefined = await octoClient.getBoard(boardId)
+
+        if (boardDetails) {
+            const result = boardDetails.cardProperties
+            const status = result.find((p) => p.name === 'Status')
+            if (status) {
+                statusProperty = {
+                    id: status.id,
+                    options: status.options,
+                }
+            }
+        }
+        return statusProperty
+    }
+
+    checkStatusChange(statusProperty: StatusProp, newCard: Block, oldCard: Block) {
+        const changedStatus: ChangeStatusProp = {
+            isChanged: false,
+            boardId: '',
+            cardId: '',
+            statusId: '',
+            statusName: '',
+        }
+        const statusPropertyId = statusProperty.id
+
+        if (oldCard.fields.properties[statusPropertyId] != newCard.fields.properties[statusPropertyId]) {
+            changedStatus.isChanged = true
+            changedStatus.boardId = newCard.boardId
+            changedStatus.statusId = newCard.fields.properties[statusPropertyId]
+            changedStatus.cardId = newCard.id
+            const result = statusProperty.options
+            const status = result.find((p) => p.id === newCard.fields.properties[statusPropertyId])
+
+            if (status) {
+                changedStatus.statusName = status?.value
+            }
+        }
+
+        return changedStatus
+    }
+
+    async updateHubSpotTicketStatus(changedStatus: ChangeStatusProp) {
+        // write api request to update Hubspot Ticket status
+        const response = await fetch('https://mm2kimai.itplace.io/mm-to-hs', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+            body: JSON.stringify(changedStatus),
+        })
+        
+        await response.json()
     }
 }
 

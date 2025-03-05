@@ -89,6 +89,9 @@ describe('src/components/kanban/kanbanCard', () => {
                     onDrop={jest.fn()}
                     showCard={jest.fn()}
                     isManualSort={false}
+                    hideCard={false}
+                    showCardArray={[]}
+                    isSameBtn={[]}
                 />
             </ReduxProvider>,
         ), {wrapper: MemoryRouter})
@@ -107,6 +110,9 @@ describe('src/components/kanban/kanbanCard', () => {
                     onDrop={jest.fn()}
                     showCard={jest.fn()}
                     isManualSort={false}
+                    hideCard={false}
+                    showCardArray={[]}
+                    isSameBtn={[]}
                 />
             </ReduxProvider>,
         ), {wrapper: MemoryRouter})
@@ -125,6 +131,9 @@ describe('src/components/kanban/kanbanCard', () => {
                     onDrop={jest.fn()}
                     showCard={jest.fn()}
                     isManualSort={false}
+                    hideCard={false}
+                    showCardArray={[]}
+                    isSameBtn={[]}
                 />
             </ReduxProvider>,
         ), {wrapper: MemoryRouter})
@@ -161,6 +170,9 @@ describe('src/components/kanban/kanbanCard', () => {
                     onDrop={jest.fn()}
                     showCard={jest.fn()}
                     isManualSort={false}
+                    hideCard={false}
+                    showCardArray={[]}
+                    isSameBtn={[]}
                 />
             </ReduxProvider>,
         ), {wrapper: MemoryRouter})
@@ -187,6 +199,9 @@ describe('src/components/kanban/kanbanCard', () => {
                     onDrop={jest.fn()}
                     showCard={jest.fn()}
                     isManualSort={false}
+                    hideCard={false}
+                    showCardArray={[]}
+                    isSameBtn={[]}
                 />
             </ReduxProvider>,
         ), {wrapper: MemoryRouter})

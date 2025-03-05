@@ -1,0 +1,22 @@
+.boardRoleButton {
+    padding-left: 10px;
+}
+
+.message-div{
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    padding-block: 10px;;
+
+    span {
+        padding-inline: 30px;
+    }
+}
+
+.success-message-div{
+    background-color: #02b502;
+}
+
+.error-message-div{
+    background-color: #e30505;
+}

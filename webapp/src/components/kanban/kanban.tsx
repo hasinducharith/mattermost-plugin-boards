@@ -23,6 +23,9 @@ import {dragAndDropRearrange} from '../cardDetail/cardDetailContentsUtility'
 import {getCurrentBoardTemplates} from '../../store/cards'
 import BoardPermissionGate from '../permissions/boardPermissionGate'
 import HiddenCardCount from '../../components/hiddenCardCount/hiddenCardCount'
+import IconButton from '../../widgets/buttons/iconButton'
+import ShowIcon from'../../widgets/icons/show'
+import HideIcon from "../../widgets/icons/hide"
 
 import KanbanCard from './kanbanCard'
 import KanbanColumn from './kanbanColumn'
@@ -30,6 +33,7 @@ import KanbanColumnHeader from './kanbanColumnHeader'
 import KanbanHiddenColumnItem from './kanbanHiddenColumnItem'
 
 import './kanban.scss'
+import '../../widgets/hideTaskStyles.scss'
 
 type Props = {
     board: Board
@@ -217,6 +221,92 @@ const Kanban = (props: Props) => {
         return <div/>
     }
 
+    // completed task hide / show 
+    const [isHidden,setIsHidden] = useState(true)
+    const [showCardArray, setShowArray] = useState([])
+    const [isSameBtn,setSameBtn] : any[] = useState([])
+    const [columnsArray,setColumnsArray] : any[] = useState([])
+    const hideTaskArray : any[] = []
+
+    const toggleHidden = (group: any) => {
+        let showState = true
+        const isIncluded = columnsArray.find((item: { columnId: any }) => item.columnId == group.option.id)
+        if(isIncluded){
+            const updatedArray = columnsArray.map((item:{ columnId: any , show: boolean}) => {
+                if (item.columnId === group.option.id) {
+                    return { ...item, show: !item.show } // Update the "show" status
+                }else {
+                    return { ...item, show: false } 
+                }
+            })
+            setColumnsArray(updatedArray)
+        }else{
+            const columnValues = {columnId: group.option.id, name: group.option.value, show: showState}
+            setColumnsArray([...columnsArray,columnValues])
+            console.log(columnsArray)
+        }
+        // hide and show card
+        if(showCardArray.length != 0){
+            if(showCardArray != group){
+                setShowArray(group)
+            }else{
+                setShowArray([])
+                showState = false
+            }
+        } else {
+            setShowArray(group)
+        }
+    }
+
+    if(board && visibleGroups) {
+        let taskCompletePropertyId = ''
+        // get taskCompleteProperty id 
+        for(let i = 0; i < board.cardProperties.length; i++){
+            if(board.cardProperties[i].name == "Task Completed" || board.cardProperties[i].name == " Task Completed") {
+                taskCompletePropertyId = board.cardProperties[i].id
+            }
+        }
+        // get count of completed tasks 
+        for(let x = 0; x < visibleGroups.length; x++) {
+            const element = visibleGroups[x]
+            const taskColumnId = element.option.id
+            let completedTaskCount = 0
+            const completedTaskArrayIndex : any[] = []
+            const completedTaskArray : any[] = []
+            const notCompletedTaskArray : any[] = []
+            for(let i = 0; i < element.cards.length; i ++){
+                const card = element.cards[i]
+                if(card.fields.properties[taskCompletePropertyId] == "true" || card.fields.properties[taskCompletePropertyId]){
+                    completedTaskCount = completedTaskCount+1
+                    completedTaskArrayIndex.push(i)
+                    completedTaskArray.push(card)
+                }else {
+                    notCompletedTaskArray.push(card)
+                }
+                
+                if(i == (element.cards.length -1)){
+                    // remove all tasks 
+                    for(let y = 0; y < element.cards.length; y++) {
+                        element.cards.splice(y)
+                    }
+                    if(notCompletedTaskArray.length > 0) {
+                        // add not completed task 
+                        for(let y = 0; y < notCompletedTaskArray.length; y++) {
+                            element.cards.push(notCompletedTaskArray[y])
+                        }                        
+                    }
+                    // add completed tasks 
+                    if(completedTaskArray.length > 0) {
+                        for(let z = 0; z < completedTaskArray.length; z ++){
+                            element.cards.push(completedTaskArray[z])
+                        }
+                    }
+                }
+            }
+            hideTaskArray.push({columnId: taskColumnId, count: completedTaskCount})
+        }
+    }
+
     return (
         <ScrollingComponent
             className='Kanban'
@@ -300,6 +390,9 @@ const Kanban = (props: Props) => {
                                 onDrop={onDropToCard}
                                 showCard={props.showCard}
                                 isManualSort={isManualSort}
+                                hideCard={isHidden}
+                                showCardArray={showCardArray}
+                                isSameBtn={isSameBtn}
                             />
                         ))}
                         {!props.readonly &&
@@ -320,6 +413,30 @@ const Kanban = (props: Props) => {
                                 </Button>
                             </BoardPermissionGate>
                         }
+
+                        <div className='hide-task-row'>
+                            <div className="hide-show-btn-div">
+                                {columnsArray.find((item: { columnId: any, show: boolean }) => item.columnId == group.option.id && item.show == true) ?
+                                    <IconButton
+                                        icon={<HideIcon/>}
+                                        onClick={() => toggleHidden(group)}
+                                        title='Hide Completed Tasks'
+                                    />
+                                    :
+                                    <IconButton
+                                        icon={<ShowIcon/>}
+                                        onClick={() => toggleHidden(group)}
+                                        title='Show Completed Tasks'
+                                    />
+                                }
+                            </div>
+                            <div className='hide-task-count'>
+                                {hideTaskArray.map((item) => (
+                                    item.columnId == group.option.id ? item.count : ''
+                                ))}
+                            </div>
+                        </div>
+
                     </KanbanColumn>
                 ))}
 

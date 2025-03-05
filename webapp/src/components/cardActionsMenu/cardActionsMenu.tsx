@@ -2,7 +2,7 @@
 // See LICENSE.txt for license information.
 
 
-import React, {ReactNode} from 'react'
+import React, {ReactNode, useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 
 import DeleteIcon from '../../widgets/icons/delete'
@@ -18,6 +18,10 @@ import {getMe} from '../../store/users'
 import {useAppSelector} from '../../store/hooks'
 import TelemetryClient, {TelemetryActions, TelemetryCategory} from '../../telemetry/telemetryClient'
 
+import CheckIcon from '../../widgets/icons/checkIcon'
+import Update from '../../widgets/icons/update'
+import octoClient from '../../octoClient'
+
 type Props = {
     cardId: string
     boardId: string
@@ -32,6 +36,9 @@ export const CardActionsMenu = (props: Props): JSX.Element => {
     const me = useAppSelector<IUser|null>(getMe)
     const intl = useIntl()
 
+    // task completed status 
+    const [taskStatus, setTaskStatus] = useState('loading')
+
     const handleDeleteCard = () => {
         TelemetryClient.trackEvent(TelemetryCategory, TelemetryActions.DeleteCard, {board: props.boardId, card: props.cardId})
         props.onClickDelete()
@@ -43,6 +50,71 @@ export const CardActionsMenu = (props: Props): JSX.Element => {
             props.onClickDuplicate()
         }
     }
+
+    // task completed by click menu 
+    const handleTaskComplete = async() => {
+        const cardDetail = await octoClient.getBlocksWithBlockID(props.cardId,props.boardId)
+        const boardDetail = await octoClient.getBoard(props.boardId)
+        let taskCompletePropertyId = ''
+        // get task completed property id 
+        if(boardDetail && boardDetail.cardProperties.length > 0) {
+            for(let i=0; i < boardDetail.cardProperties.length; i++){
+                const property = boardDetail.cardProperties[i]
+                if(property.name == "Task Completed" || property.name == " Task Completed"){  
+                    taskCompletePropertyId = property.id
+                }
+            }
+        }
+        // update task options 
+        if(cardDetail && cardDetail.length > 0){
+            const cardProperty = cardDetail[0].fields.properties
+
+            if(cardProperty[taskCompletePropertyId]){
+                delete cardProperty[taskCompletePropertyId]
+            }else if(taskCompletePropertyId){
+                cardProperty[taskCompletePropertyId] = 'true'
+            }
+
+            if(cardProperty){
+                const finalArray = {
+                    updatedFields: {
+                        properties: cardProperty
+                    },
+                    deletedFields: [],
+                }
+                await octoClient.patchBlock(props.boardId,props.cardId,finalArray)
+            }
+        }
+    }
+
+    const getTaskStatus = async() => {
+        const cardDetail = await octoClient.getBlocksWithBlockID(props.cardId,props.boardId)
+        const boardDetail = await octoClient.getBoard(props.boardId)
+        let taskCompletePropertyId = ''
+        // get task completed property id 
+        if(boardDetail && boardDetail.cardProperties.length > 0) {
+            for(let i=0; i < boardDetail.cardProperties.length; i++){
+                const property = boardDetail.cardProperties[i]
+                if(property.name == "Task Completed" || property.name == " Task Completed"){  
+                    taskCompletePropertyId = property.id
+                }
+            }
+        }
+        // update task options 
+        if(cardDetail && cardDetail.length > 0){
+            const cardProperty = cardDetail[0].fields.properties
+
+            if(cardProperty[taskCompletePropertyId] == 'true'){
+                setTaskStatus('inactive')
+            }else{
+                setTaskStatus('active')
+            }
+        }
+    }
+
+    useEffect(() => {
+        getTaskStatus()
+    }, [])
 
     return (
         <Menu position='left'>
@@ -60,6 +132,22 @@ export const CardActionsMenu = (props: Props): JSX.Element => {
                     name={intl.formatMessage({id: 'CardActionsMenu.duplicate', defaultMessage: 'Duplicate'})}
                     onClick={handleDuplicateCard}
                 />}
+                {taskStatus === 'inactive' &&
+                <Menu.Text
+                    icon={<Update/>}
+                    id='taskCompelet'
+                    name={intl.formatMessage({id: 'CardActionsMenu.taskComplete', defaultMessage: 'Undo Task Complete'})}
+                    onClick={handleTaskComplete}
+                />
+                }
+                {taskStatus === 'active' &&
+                <Menu.Text
+                    icon={<CheckIcon/>}
+                    id='taskCompelet'
+                    name={intl.formatMessage({id: 'CardActionsMenu.taskComplete', defaultMessage: 'Task Complete'})}
+                    onClick={handleTaskComplete}
+                />
+                }
             </BoardPermissionGate>
             {me?.id !== 'single-user' &&
                 <Menu.Text

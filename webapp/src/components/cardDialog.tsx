@@ -221,21 +221,21 @@ const CardDialog = (props: Props): JSX.Element => {
         sendFlashMessage({content: intl.formatMessage({id: 'AttachmentBlock.delete', defaultMessage: 'Attachment Deleted Successfully.'}), severity: 'normal'})
     }, [card?.boardId, card?.id, card?.fields.contentOrder])
 
-    const attachBtn = (): React.ReactNode => {
-        return (
-            <BoardPermissionGate permissions={[Permission.ManageBoardCards]}>
-                <Button
-                    icon={<CompassIcon icon='paperclip'/>}
-                    className='cardFollowBtn cardFollowBtn--attach'
-                    emphasis='gray'
-                    size='medium'
-                    onClick={addElement}
-                >
-                    {intl.formatMessage({id: 'CardDetail.Attach', defaultMessage: 'Attach'})}
-                </Button>
-            </BoardPermissionGate>
-        )
-    }
+    // const attachBtn = (): React.ReactNode => {
+    //     return (
+    //         <BoardPermissionGate permissions={[Permission.ManageBoardCards]}>
+    //             <Button
+    //                 icon={<CompassIcon icon='paperclip'/>}
+    //                 className='cardFollowBtn cardFollowBtn--attach'
+    //                 emphasis='gray'
+    //                 size='medium'
+    //                 onClick={addElement}
+    //             >
+    //                 {intl.formatMessage({id: 'CardDetail.Attach', defaultMessage: 'Attach'})}
+    //             </Button>
+    //         </BoardPermissionGate>
+    //     )
+    // }
 
     const followActionButton = (following: boolean): React.ReactNode => {
         const followBtn = (
@@ -265,9 +265,10 @@ const CardDialog = (props: Props): JSX.Element => {
         )
 
         if (!isTemplate && Utils.isFocalboardPlugin() && !card?.limited) {
-            return (<>{attachBtn()}{following ? unfollowBtn : followBtn}</>)
+            // return (<>{attachBtn()}{following ? unfollowBtn : followBtn}</>)
+            return (<>{following ? unfollowBtn : followBtn}</>)
         }
-        return (<>{attachBtn()}</>)
+        // return (<>{attachBtn()}</>)
     }
 
     const followingCards = useAppSelector(getUserBlockSubscriptionList)

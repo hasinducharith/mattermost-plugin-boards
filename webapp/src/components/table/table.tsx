@@ -225,6 +225,7 @@ const Table = (props: Props): JSX.Element => {
                             addCard={props.addCard}
                             onCardClicked={props.onCardClicked}
                             onDrop={onDropToCard}
+                            isCompleted={false}
                         />
                         }
                     </div>

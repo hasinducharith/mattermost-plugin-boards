@@ -292,7 +292,7 @@ const CardDetail = (props: Props): JSX.Element|null => {
                 />}
 
                 {attachments.length !== 0 && <Fragment>
-                    <hr/>
+                    {/* <hr/> */}
                     <AttachmentList
                         attachments={attachments}
                         onDelete={onDelete}
@@ -309,6 +309,9 @@ const CardDetail = (props: Props): JSX.Element|null => {
                         boardId={card.boardId}
                         cardId={card.id}
                         readonly={props.readonly || !canCommentBoardCards}
+                        attachments={attachments}
+                        onDelete={onDelete}
+                        addAttachment={addAttachment}
                     />
                 </Fragment>}
             </div>

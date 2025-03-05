@@ -1,0 +1,306 @@
+.startBtn {
+    width: 100%;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+.stopBtn {
+    color: #fff;
+    width: 150px;
+
+    &:hover {
+        background-color: #990030 !important;
+      }
+  }
+
+  .stopBtnMenu {
+    color: #fff;
+    background-color: #990030 !important;
+    cursor: pointer;
+  }
+
+  .parent {
+    display: flex;
+  }
+  
+  .child {
+    flex: 1;
+  }
+
+  .totalTime{
+    font-family: "Open Sans", sans-serif;
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    border-radius: var(--default-rad);
+    min-width: 20px;
+    overflow: hidden;
+    background: transparent;
+    border: 0;
+    transition: all 100ms ease-out 0s;
+    color: inherit;
+    height: 32px;
+    padding: 0 10px;
+    font-weight: 600;
+}
+
+.timespend{
+  display: flex;
+  flex-direction: row;
+  font-family: "Open Sans", sans-serif;
+  position: relative;
+}
+
+.historyView{
+  background-color: rgb(var(--center-channel-bg-rgb));
+  border-radius: var(--modal-rad);
+  z-index: 1000;
+  width: 404px;
+  position: absolute;
+  bottom: 34px;
+  -webkit-box-shadow: 0 1px 8px 0 rgba(0,0,0,.5);
+  box-shadow: 0 1px 8px 0 rgba(0,0,0,.5);
+  border: 1px solid #fff;
+
+}
+
+.timespend-wrapper{
+  position: relative;
+}
+.itplaceTimer{
+  position: absolute;
+}
+
+.titleHistoryView{
+  border-bottom: 1px solid #e6e8ec;
+  font-size: 14px;
+  padding: 8px;
+  font-weight: bolder;
+}
+  
+.item1{
+  padding-right: 90px;
+}
+.item2{
+  padding-right: 2px;
+}
+
+.timeInput{
+  height: 100%;
+  border-radius: 8px !important;
+  border: 2px solid #d4d6db;
+}
+
+.hourMinuteWidget{
+  border: 2px solid #d4d6db;
+  border-radius: 8px;
+  -webkit-transition: all .2s ease-out;
+  transition: all .2s ease-out;
+}
+
+.tw-duration-input {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  height: 100%;
+  padding: 1px 5px;
+  text-align: center;
+  width: 100%;
+}
+.tw-duration-input__hour, .tw-duration-input__minute {
+  -moz-appearance: textfield;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  height: 100%;
+  width: 60px;
+}
+
+.tw-duration-input__hour input, .tw-duration-input__minute input {
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 15px;
+  padding: 0;
+  text-align: right;
+  width: 40px;
+}
+
+.tw-duration-input__unit {
+  color: #8d919a;
+  cursor: default;
+  display: inline-block;
+  font-size: 15px;
+  margin-left: 5px;
+  font-weight: bolder;
+}
+.tw-duration-input__separator {
+  color: #888;
+  cursor: default;
+  display: inline-block;
+  font-size: 12px;
+}
+
+.tw-duration-input__hour, .tw-duration-input__minute {
+  -moz-appearance: textfield;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  height: 100%;
+  width: 60px;
+}
+
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.tw-duration-input__edit-icon {
+  color: #8d919a;
+  cursor: pointer;
+  display: inline-block;
+  padding-left: 5px;
+  -webkit-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+
+.timeRecordTable{
+  width:100%;
+}
+
+.timeRecordBreakTable{
+  width:100%;
+  color: #888;
+}
+
+.devNameCL{
+  width:100%
+}
+
+.devTimeCl{
+  font-weight: bolder;
+  padding-left: 150px;
+}
+
+.timeRecordiv{
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 5px; 
+}
+
+.itp-delete_btn{
+  cursor: pointer;
+}
+
+span.devTimeCL {
+  padding-left: 25px;
+}
+
+.titleHistorydetials{
+  border-bottom: 1px solid #ffffff;
+  font-size: 14px;
+  max-height: 500px;
+  overflow: auto;
+  padding: 0px 10px 5px 10px;
+
+}
+
+.titleHistorydetials thead{
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.timeRecordTable thead th{
+  text-align: left;
+}
+
+.timeRecordBreakTable thead th{
+  text-align: left;
+}
+
+.timeRecordBreakTable tr:hover {
+  background-color: rgba(var(--center-channel-color-rgb), 0.08);
+  color: rgb(var(--center-channel-color-rgb));
+}
+
+.timeRecordBreakTable tbody tr td {
+  color: rgb(var(--center-channel-color-rgb));
+}
+
+.prof-timerecord :hover {
+  background-color: rgba(var(--center-channel-color-rgb), 0.08);
+  border-radius: var(--modal-rad);
+  color: rgb(var(--center-channel-color-rgb));
+}
+
+.prof-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 5px 5px 5px;
+}
+
+.prof-user {
+  display: flex;
+  align-items: center;
+}
+
+.prof-image {
+  border-radius: 50%;
+  overflow: hidden;
+  width: 40px; /* Adjust the size as needed */
+  height: 40px; /* Adjust the size as needed */
+  margin-right: 10px; /* Adjust the spacing */
+}
+
+.prof-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.prof-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(var(--center-channel-color-rgb));
+}
+
+.prof-detail {
+  display: flex;
+  align-items: center;
+}
+
+.prof-time {
+  font-size: 14px; /* Adjust the font size as needed */
+  font-weight: 600;
+  color : rgb(var(--center-channel-color-rgb));
+}
+
+.prof-arrow {
+  font-size: 24px; /* Adjust the font size as needed */
+  margin-left: 10px; /* Adjust the spacing */
+}
+
+.counterspan{
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+.counterspan:hover{
+  border-color:#FFF;
+}
+
+.timerSideBar{
+
+  display: flex;
+  justify-content: center;
+  padding-bottom: 10px;
+
+}
