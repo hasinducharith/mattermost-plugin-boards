@@ -1,0 +1,25 @@
+.hide-task-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 0px;
+}
+.hide-task-row:hover {
+    background-color: rgba(140, 140, 140, 0.152);
+}
+.hide-task-count {
+    font-size: 15px;
+    background-color: gray;
+    padding-right: 5px;
+    padding-left: 5px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    position: relative;
+    display: inline-block;
+    font-weight: bold;
+    color: white;
+}
+
+.hide-show-btn-div, .hide-task-count {
+    padding: 0px 10px;
+}

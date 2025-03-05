@@ -75,6 +75,7 @@ describe('components/table/TableRows', () => {
                         addCard={addCard}
                         onCardClicked={jest.fn()}
                         onDrop={jest.fn()}
+                        isCompleted={false}
                     />
                 </ColumnResizeProvider>
             </ReduxProvider>,

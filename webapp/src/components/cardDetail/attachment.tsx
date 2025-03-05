@@ -3,16 +3,16 @@
 
 import React from 'react'
 
-import {useIntl} from 'react-intl'
+// import {useIntl} from 'react-intl'
 
-import AttachmentElement from '../../components/content/attachmentElement'
+// import AttachmentElement from '../../components/content/attachmentElement'
 import {AttachmentBlock} from '../../blocks/attachmentBlock'
 
 import './attachment.scss'
 import {Block} from '../../blocks/block'
-import CompassIcon from '../../widgets/icons/compassIcon'
-import BoardPermissionGate from '../../components/permissions/boardPermissionGate'
-import {Permission} from '../../constants'
+// import CompassIcon from '../../widgets/icons/compassIcon'
+// import BoardPermissionGate from '../../components/permissions/boardPermissionGate'
+// import {Permission} from '../../constants'
 
 type Props = {
     attachments: AttachmentBlock[]
@@ -22,11 +22,11 @@ type Props = {
 
 const AttachmentList = (props: Props): JSX.Element => {
     const {attachments, onDelete, addAttachment} = props
-    const intl = useIntl()
+    // const intl = useIntl()
 
     return (
         <div className='Attachment'>
-            <div className='attachment-header'>
+            {/* <div className='attachment-header'>
                 <div className='attachment-title mb-2'>{intl.formatMessage({id: 'Attachment.Attachment-title', defaultMessage: 'Attachment'})} {`(${attachments.length})`}</div>
                 <BoardPermissionGate permissions={[Permission.ManageBoardCards]}>
                     <div
@@ -51,7 +51,7 @@ const AttachmentList = (props: Props): JSX.Element => {
                         </div>)
                 })
                 }
-            </div>
+            </div> */}
         </div>
     )
 }
