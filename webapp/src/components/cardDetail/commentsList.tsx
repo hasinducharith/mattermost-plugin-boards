@@ -198,6 +198,8 @@ const CommentsList = (props: Props) => {
                         userImageUrl={Utils.getProfilePicture(comment.modifiedBy)}
                         userId={comment.modifiedBy}
                         readonly={props.readonly || !canDeleteComment}
+                        boardId={props.boardId}
+                        cardId={props.cardId}
                         onDelete={onDelete}
                     />
                 )

@@ -66,6 +66,8 @@ describe('components/cardDetail/comment', () => {
                     userId={comment.modifiedBy}
                     userImageUrl={userImageUrl}
                     readonly={false}
+                    boardId={''} 
+                    cardId={''} 
                     onDelete={jest.fn()}
                 />
             </ReduxProvider>,
@@ -83,6 +85,8 @@ describe('components/cardDetail/comment', () => {
                     userId={comment.modifiedBy}
                     userImageUrl={userImageUrl}
                     readonly={true}
+                    boardId={''} 
+                    cardId={''} 
                     onDelete={jest.fn()}
                 />
             </ReduxProvider>,
@@ -98,6 +102,8 @@ describe('components/cardDetail/comment', () => {
                     userId={comment.modifiedBy}
                     userImageUrl={userImageUrl}
                     readonly={false}
+                    boardId={''} 
+                    cardId={''} 
                     onDelete={jest.fn()}
                 />
             </ReduxProvider>,
@@ -132,6 +138,8 @@ describe('components/cardDetail/comment', () => {
                     userId={comment.modifiedBy}
                     userImageUrl={userImageUrl}
                     readonly={false}
+                    boardId={''} 
+                    cardId={''} 
                     onDelete={jest.fn()}
                 />
             </ReduxProvider>,
@@ -162,6 +170,8 @@ describe('components/cardDetail/comment', () => {
                     userId={comment.modifiedBy}
                     userImageUrl={userImageUrl}
                     readonly={true}
+                    boardId={''} 
+                    cardId={''} 
                     onDelete={jest.fn()}
                 />
             </ReduxProvider>,
@@ -190,6 +200,8 @@ describe('components/cardDetail/comment', () => {
                     userId={comment.modifiedBy}
                     userImageUrl={userImageUrl}
                     readonly={false}
+                    boardId={''} 
+                    cardId={''} 
                     onDelete={jest.fn()}
                 />
             </ReduxProvider>,
