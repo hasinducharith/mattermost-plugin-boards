@@ -21,6 +21,10 @@ import MenuWrapper from '../widgets/menuWrapper'
 import {useSortableWithGrip} from '../hooks/sortable'
 import {Position} from '../components/cardDetail/cardDetailContents'
 
+import octoClient from '../octoClient'
+import {setDocumentViwerUrl, setDocumentViwerType, setDocumentLoading} from '../../../webapp/src/store/boards'
+import {useAppDispatch} from '../store/hooks'
+
 import ContentElement from './content/contentElement'
 import AddContentMenuItem from './addContentMenuItem'
 import {contentRegistry} from './content/contentRegistry'
@@ -43,6 +47,7 @@ const ContentBlock = (props: Props): JSX.Element => {
     const [, isOver2,, itemRef2] = useSortableWithGrip('content', {block, cords}, true, (src, dst) => props.onDrop(src, dst, 'right'))
     const [, isOver3,, itemRef3] = useSortableWithGrip('content', {block, cords}, true, (src, dst) => props.onDrop(src, dst, 'left'))
     const [menuOpened, setMenuOpened] = useState(false)
+    const dispatch = useAppDispatch()
 
     const index = cords.x
     const colIndex = (cords.y || cords.y === 0) && cords.y > -1 ? cords.y : -1
@@ -61,6 +66,30 @@ const ContentBlock = (props: Props): JSX.Element => {
     if (menuOpened) {
         className += ' menuOpened'
     }
+
+    const onClickContentImageEvent = async(block: ContentBlockType) => {
+        dispatch(setDocumentLoading(true))
+        const imageDataUrl = await octoClient.getFileAsDataUrl(block.boardId, block.fields.fileId)
+        dispatch(setDocumentLoading(false))
+        if(imageDataUrl){
+            const imageUrl: string = imageDataUrl.url ? imageDataUrl.url : ''
+            dispatch(setDocumentViwerUrl(imageUrl))
+            dispatch(setDocumentViwerType("img"))
+        }
+    }
+
+    let clickbleClass = " not-clickable"
+    const checkBlockIsImage = (type: string) => {
+        let isImage = false
+        if(type == 'image'){
+            isImage = true
+            clickbleClass = "clickable"
+        }
+
+        return isImage
+    }
+
+    const isImage = checkBlockIsImage(block.type)
 
     return (
         <div
@@ -154,11 +183,18 @@ const ContentBlock = (props: Props): JSX.Element => {
                         style={{flex: 'none', height: '100%'}}
                     />
                 }
-                <ContentElement
-                    block={block}
-                    readonly={readonly}
-                    cords={cords}
-                />
+                <div
+                    className={clickbleClass}
+                    onClick={() => {
+                        if(isImage) onClickContentImageEvent(block)
+                    }}
+                >
+                    <ContentElement
+                        block={block}
+                        readonly={readonly}
+                        cords={cords}
+                    />
+                </div>
             </div>
             <div
                 ref={itemRef2}

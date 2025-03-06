@@ -38,6 +38,8 @@ import Sidebar from './sidebar/sidebar'
 
 import './workspace.scss'
 
+import FullViewer from './commentAttachmentFullView/fullViewer'
+
 type Props = {
     readonly: boolean
 }
@@ -198,6 +200,7 @@ const Workspace = (props: Props) => {
                     readonly={props.readonly}
                 />
             </div>
+            <FullViewer />
         </div>
     )
 }

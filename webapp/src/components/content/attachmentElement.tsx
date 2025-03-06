@@ -15,8 +15,10 @@ import BoardPermissionGate from '../../components/permissions/boardPermissionGat
 import ConfirmationDialogBox, {ConfirmationDialogBoxProps} from '../../components/confirmationDialogBox'
 import {Utils} from '../../utils'
 import {getUploadPercent} from '../../store/attachments'
-import {useAppSelector} from '../../store/hooks'
+import {useAppSelector, useAppDispatch} from '../../store/hooks'
 import {Permission} from '../../constants'
+
+import {setDocumentViwerUrl, setDocumentViwerType, setDocumentLoading} from '../../../../webapp/src/store/boards'
 
 import ArchivedFile from './archivedFile/archivedFile'
 
@@ -43,6 +45,12 @@ const AttachmentElement = (props: Props): JSX.Element|null => {
     const uploadPercent = useAppSelector(getUploadPercent(block.id))
     const intl = useIntl()
     const [downloadProgress, setDownloadProgress] = useState<boolean>(false)
+    const dispatch = useAppDispatch()
+    let isVideo = false
+    let videoClassName = "FileElement mr-4 "
+    const [isImgLoading, setIsImgLoading] = useState<boolean>(false)
+    const [imageDataUrl, setImageDataUrl] = useState<string>()
+
 
     useEffect(() => {
         const loadFile = async () => {
@@ -57,6 +65,14 @@ const AttachmentElement = (props: Props): JSX.Element|null => {
             setFileInfo(attachmentInfo)
         }
         loadFile()
+
+        const imageFileLoad = async () => {
+            setIsImgLoading(true)
+            const fileURL = await octoClient.getFileAsDataUrl(block.boardId, props.block.fields.fileId)
+            setIsImgLoading(false)
+            setImageDataUrl(fileURL.url)
+        }
+        imageFileLoad()
     }, [])
 
     useEffect(() => {
@@ -144,99 +160,217 @@ const AttachmentElement = (props: Props): JSX.Element|null => {
         }
     }
 
-    return (
-        <div className='FileElement mr-4'>
-            {showConfirmationDialogBox && <ConfirmationDialogBox dialogBox={confirmDialogProps}/>}
-            <div className='fileElement-icon-division'>
-                <CompassIcon
-                    icon={fileIcon}
-                    className='fileElement-icon'
-                />
-            </div>
-            <div className='fileElement-file-details mt-3'>
-                <Tooltip
-                    title={fileInfo.name ? fileInfo.name : ''}
-                    placement='bottom'
-                >
-                    <div className='fileElement-file-name'>
-                        {fileName}
-                    </div>
-                </Tooltip>
-                {!block.isUploading && <div className='fileElement-file-ext-and-size'>
-                    {fileInfo.extension?.substring(1)} {fileSize}
-                </div> }
-                {block.isUploading && <div className='fileElement-file-uploading'>
-                    {intl.formatMessage({
-                        id: 'AttachmentElement.upload-percentage',
-                        defaultMessage: 'Uploading...({uploadPercent}%)',
-                    }, {
-                        uploadPercent,
-                    })}
-                </div>}
-            </div>
-            {block.isUploading &&
-                <div className='progress'>
-                    <span
-                        className='progress-bar'
-                        style={{width: uploadPercent + '%'}}
-                    >
-                        {''}
-                    </span>
-                </div>}
-            {/* download progress bar */}
-            {
-                downloadProgress && <div className='progress'>
-                    <progress className="pure-material-progress-linear" title='download in progess'/>
-                </div>
-
+    const checkAttachmentIsPreview = (fileId: string) => {
+        let canPreview = false
+        // Split the filename at the last dot (.)
+        const parts = fileId.split('.')
+        // check the last element (assuming it's the extension)
+        if(parts[parts.length - 1]){
+            const fileExtension = parts[parts.length - 1]
+            if(fileExtension == "png" || fileExtension == "jpg" ||fileExtension == "jpeg" || fileExtension == "gif"){
+                canPreview = true
+            }else if(fileExtension == "webm" || fileExtension == "mp4"){
+                isVideo = true
+                videoClassName += "video-file"
             }
-            {!block.isUploading &&
-            <div className='fileElement-delete-download'>
-                <BoardPermissionGate permissions={[Permission.ManageBoardCards]}>
-                    <MenuWrapper className='mt-3 fileElement-menu-icon'>
-                        <IconButton
-                            size='medium'
-                            icon={<CompassIcon icon='dots-vertical'/>}
-                        />
-                        <div className='delete-menu'>
-                            <Menu position='left'>
-                                <Menu.Text
-                                    id='makeTemplate'
-                                    icon={
-                                        <CompassIcon
-                                            icon='trash-can-outline'
-                                        />}
-                                    name='Delete'
-                                    onClick={handleDeleteButtonClick}
-                                />
-                                <Menu.Text
-                                    id='makeTemplate'
-                                    icon={
-                                        <CompassIcon
-                                            icon='eye-outline'
-                                        />}
-                                    name='Show'
-                                    onClick={handleShowButtonClick}
-                                />
-                            </Menu>
-                        </div>
-                    </MenuWrapper>
-                </BoardPermissionGate>
-                <Tooltip
-                    title={intl.formatMessage({id: 'AttachmentElement.download', defaultMessage: 'Download'})}
-                    placement='bottom'
-                >
-                    <div
-                        className='fileElement-download-btn mt-3 mr-2'
-                        onClick={attachmentDownloadHandler}
+        }
+        return canPreview
+    }
+
+    const isPreview = checkAttachmentIsPreview(block.fields.fileId)
+
+    const onClickCommentImageEvent = async(block: Block) => {
+        dispatch(setDocumentLoading(true))
+        const fileUrl = await octoClient.getFileAsDataUrl(block.boardId, block.fields.fileId)
+        dispatch(setDocumentLoading(false))
+        if(fileUrl){
+            const imageUrl: string = fileUrl.url ? fileUrl.url : ''
+            dispatch(setDocumentViwerUrl(imageUrl))
+            dispatch(setDocumentViwerType("img"))
+        }
+    }
+
+    const onClickCommentVideoEvent = async(block: Block) => {
+        dispatch(setDocumentLoading(true))
+        const videoDataUrl = await octoClient.getFileAsDataUrl(block.boardId, block.fields.fileId)
+        dispatch(setDocumentLoading(false))
+        if(videoDataUrl){
+            const videoUrl: string = videoDataUrl.url ? videoDataUrl.url : ''
+            dispatch(setDocumentViwerUrl(videoUrl))
+            dispatch(setDocumentViwerType("vid"))
+        }
+    }
+
+
+    return (
+        <>
+            { isPreview == false ? 
+                (
+                    <div 
+                        className={videoClassName}
+                        onClick={() => {
+                            if(isVideo) onClickCommentVideoEvent(block)
+                        }}
                     >
-                        <CompassIcon
-                            icon='download-outline'
-                        />
+                        {showConfirmationDialogBox && <ConfirmationDialogBox dialogBox={confirmDialogProps}/>}
+                        <div className='fileElement-icon-division'>
+                            <CompassIcon
+                                icon={fileIcon}
+                                className='fileElement-icon'
+                            />
+                        </div>
+                        <div className='fileElement-file-details mt-3'>
+                            <Tooltip
+                                title={fileInfo.name ? fileInfo.name : ''}
+                                placement='bottom'
+                            >
+                                <div className='fileElement-file-name'>
+                                    {fileName}
+                                </div>
+                            </Tooltip>
+                            {!block.isUploading && <div className='fileElement-file-ext-and-size'>
+                                {fileInfo.extension?.substring(1)} {fileSize}
+                            </div> }
+                            {block.isUploading && <div className='fileElement-file-uploading'>
+                                {intl.formatMessage({
+                                    id: 'AttachmentElement.upload-percentage',
+                                    defaultMessage: 'Uploading...({uploadPercent}%)',
+                                }, {
+                                    uploadPercent,
+                                })}
+                            </div>}
+                        </div>
+                        {block.isUploading &&
+                            <div className='progress'>
+                                <span
+                                    className='progress-bar'
+                                    style={{width: uploadPercent + '%'}}
+                                >
+                                    {''}
+                                </span>
+                            </div>}
+                        {/* download progress bar */}
+                        {
+                            downloadProgress && <div className='progress'>
+                                <progress className="pure-material-progress-linear" title='download in progess'/>
+                            </div>
+                        }
+                        {!block.isUploading &&
+                        <div className='fileElement-delete-download'>
+                            <BoardPermissionGate permissions={[Permission.ManageBoardCards]}>
+                                <MenuWrapper className='mt-3 fileElement-menu-icon'>
+                                    <IconButton
+                                        size='medium'
+                                        icon={<CompassIcon icon='dots-vertical'/>}
+                                    />
+                                    <div className='delete-menu'>
+                                        <Menu position='left'>
+                                            <Menu.Text
+                                                id='makeTemplate'
+                                                icon={
+                                                    <CompassIcon
+                                                        icon='trash-can-outline'
+                                                    />}
+                                                name='Delete'
+                                                onClick={handleDeleteButtonClick}
+                                            />
+                                            <Menu.Text
+                                                id='makeTemplate'
+                                                icon={
+                                                    <CompassIcon
+                                                        icon='eye-outline'
+                                                    />}
+                                                name='Show'
+                                                onClick={handleShowButtonClick}
+                                            />
+                                        </Menu>
+                                    </div>
+                                </MenuWrapper>
+                            </BoardPermissionGate>
+                            <Tooltip
+                                title={intl.formatMessage({id: 'AttachmentElement.download', defaultMessage: 'Download'})}
+                                placement='bottom'
+                            >
+                                <div
+                                    className='fileElement-download-btn mt-3 mr-2'
+                                    onClick={attachmentDownloadHandler}
+                                >
+                                    <CompassIcon
+                                        icon='download-outline'
+                                    />
+                                </div>
+                            </Tooltip>
+                        </div> }
                     </div>
-                </Tooltip>
-            </div> }
-        </div>
+                ) : (
+                    <div className="image-container">
+                        {showConfirmationDialogBox && <ConfirmationDialogBox dialogBox={confirmDialogProps}/>}
+                        <div className="image-block">   
+                            <div className="image-part" onClick={() => onClickCommentImageEvent(block)}>
+                                {isImgLoading === false ? (
+                                    <img
+                                        className='ImageElement'
+                                        src={imageDataUrl}
+                                        alt={block.title}
+                                    />
+                                ):(
+                                    <div className="img-loader-container">
+                                        <div className='img-loader'></div>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="download-btn">
+                                <Tooltip
+                                    title={intl.formatMessage({id: 'AttachmentElement.download', defaultMessage: 'Download'})}
+                                    placement='bottom'
+                                >
+                                    <div
+                                        className='fileElement-download-btn mt-3 mr-2'
+                                        onClick={attachmentDownloadHandler}
+                                    >
+                                        <CompassIcon
+                                            icon='download-outline'
+                                        />
+                                    </div>
+                                </Tooltip>
+                            </div>
+                            <div className='fileElement-delete-download image-menu'>
+                                <BoardPermissionGate permissions={[Permission.ManageBoardCards]}>
+                                    <MenuWrapper className='mt-3 fileElement-menu-icon'>
+                                        <IconButton
+                                            size='medium'
+                                            icon={<CompassIcon icon='dots-vertical'/>}
+                                        />
+                                        <div className='delete-menu'>
+                                            <Menu position='left'>
+                                                <Menu.Text
+                                                    id='makeTemplate'
+                                                    icon={
+                                                        <CompassIcon
+                                                            icon='trash-can-outline'
+                                                        />}
+                                                    name='Delete'
+                                                    onClick={handleDeleteButtonClick}
+                                                />
+                                                <Menu.Text
+                                                    id='makeTemplate'
+                                                    icon={
+                                                        <CompassIcon
+                                                            icon='eye-outline'
+                                                        />}
+                                                    name='Show'
+                                                    onClick={handleShowButtonClick}
+                                                />
+                                            </Menu>
+                                        </div>
+                                    </MenuWrapper>
+                                </BoardPermissionGate>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </>
     )
 }
 

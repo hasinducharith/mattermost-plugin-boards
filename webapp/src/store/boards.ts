@@ -28,6 +28,9 @@ type BoardsState = {
     templates: {[key: string]: Board}
     membersInBoards: {[key: string]: {[key: string]: BoardMember}}
     myBoardMemberships: {[key: string]: BoardMember}
+    documentViwerUrl: string
+    documentViwerType: string
+    documentLoading: boolean
 }
 
 export const fetchBoardMembers = createAsyncThunk(
@@ -129,7 +132,7 @@ export const updateMembersHandler = (state: BoardsState, action: PayloadAction<B
 
 const boardsSlice = createSlice({
     name: 'boards',
-    initialState: {loadingBoard: false, linkToChannel: '', boards: {}, templates: {}, membersInBoards: {}, myBoardMemberships: {}} as BoardsState,
+    initialState: {loadingBoard: false, linkToChannel: '', boards: {}, templates: {}, membersInBoards: {}, myBoardMemberships: {}, documentViwerUrl: '', documentViwerType: '', documentLoading: false} as BoardsState,
     reducers: {
         setCurrent: (state, action: PayloadAction<string>) => {
             state.current = action.payload
@@ -159,6 +162,15 @@ const boardsSlice = createSlice({
                 }
             })
         },
+        setDocumentViwerUrl: (state, action: PayloadAction<string>) => {
+            state.documentViwerUrl = action.payload
+        },
+        setDocumentViwerType: (state, action: PayloadAction<string>) => {
+            state.documentViwerType = action.payload
+        },
+        setDocumentLoading: (state, action: PayloadAction<boolean>) => {
+            state.documentLoading = action.payload
+        }
     },
 
     extraReducers: (builder) => {
@@ -226,7 +238,7 @@ const boardsSlice = createSlice({
     },
 })
 
-export const {updateBoards, setCurrent, setLinkToChannel, updateMembers, addMyBoardMemberships} = boardsSlice.actions
+export const {updateBoards, setCurrent, setLinkToChannel, updateMembers, addMyBoardMemberships, setDocumentViwerUrl, setDocumentViwerType, setDocumentLoading} = boardsSlice.actions
 export const {reducer} = boardsSlice
 
 export const getBoards = (state: RootState): {[key: string]: Board} => state.boards?.boards || {}
@@ -288,3 +300,9 @@ export function getMyBoardMembership(boardId: string): (state: RootState) => Boa
 }
 
 export const getCurrentLinkToChannel = (state: RootState): string => state.boards.linkToChannel
+
+export const getDocumentViwerUrl = (state: RootState): string => state.boards.documentViwerUrl
+
+export const getDocumentViwerType = (state: RootState): string => state.boards.documentViwerType
+
+export const getDocumentLoading = (state: RootState): boolean => state.boards.documentLoading
